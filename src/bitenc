@@ -1,7 +1,7 @@
-#!/run/current-system/sw/bin/bash
+#!/bin/bash
 
 set -e;
-set -x;
+#set -x;
 
 if test ${#} -lt 2;
 then

@@ -3,7 +3,7 @@ Converter from a 4-bit hex string representation to a 5-bit base32 or a 6-bit ba
 
 Rationale:
 ----------
-I had found myself wanting to have a shorter string representation of the sha256 or sha512 sums; basenc (base32 or base64[url]) were not really what I wanted, since they produce a longer string.
+I had found myself wanting to have a shorter string representation of the sha256 or sha512 sums; basenc (base32 or base64[url]) was not really what I wanted, since they produce a longer string.
 
 
 Command Argument Usage:
