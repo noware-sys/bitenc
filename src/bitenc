@@ -41,7 +41,7 @@ base_min=2;
 base_out="${1}";
 if test "${base_out}" -lt ${base_min} || test "${base_out}" -gt ${base_max};
 then
-	1>&2 printf '%s\n' "${0}: Usage: bits should be between 2-6 incl";
+	1>&2 printf '%s\n' "${0}: Usage: bits should be between ${base_min}-${base_max} incl";
 	exit 1;
 fi;
 

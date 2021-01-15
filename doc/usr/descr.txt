@@ -21,7 +21,7 @@ bits:
 str:
 	the input string:
 		Should contain only the characters [a-zA-Z0-9].
-charset [optinal]
+charset [optional]
 	Default: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
 	The character set, which characters are taken from, for forming the output string.
 	This could provide useful if one desires to change the default character set, for example:
