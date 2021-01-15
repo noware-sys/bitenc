@@ -59,6 +59,11 @@ No additional error checking is performed: for example, if the bits argument is 
 The error message for an invalid/unknown character in the input string starts counting them from substring position 0 (aka the first character would be #0).
 
 
-Issue/Bug/Comment/Suggestion/Other:
+Issue/Bug:
 ----------------------------------------
-Please report a bug/problem, or comment on a suggestion, etc, or simply start a conversation by opening an issue here.
+Please report a bug/problem by opening an issue here.
+
+
+Comment/Suggestion/Other:
+----------------------------------------
+To make a comment or a suggestion, or simply to start a conversation, see the discussions here.
