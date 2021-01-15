@@ -11,12 +11,13 @@ Command Argument Usage:
 $ bitenc bits str [charset];
 
 bits:
-	number of grouping bits:
-		2 for a binary representation;
-		3 for a ternary representation;
-		4 for no net change from hexadecimal;
-		5 for a base32 representation;
-		6 for a base64 representation;
+	number of grouping bits/exponent for the base (2):
+		1 for a 1-bit, 2^1=2-base binary representation;
+		2 for a 2-bit, 2^2=4-base representation;
+		3 for a 3-bit, 2^3=8-base representation;
+		4 for no net change from 4-bit, 2^4=16-base hexadecimal representation;
+		5 for a 5-bit, 2^5=32-base base32 representation;
+		6 for a 6-bit, 2^6=64-base base64 representation;
 		any other input would be invalid.
 str:
 	the input string:
@@ -56,11 +57,6 @@ The characters '-' and '_' were arbitrarily chosen, as they seemed the most neut
 No additional error checking is performed: for example, if the bits argument is not an integer, then undetermined program behaviour could occur.
 
 The error message for an invalid/unknown character in the input string starts counting them from substring position 0 (aka the first character would be #0).
-
-
-Known Issue:
-------------
-In the code, "base" would rather mean "bits".
 
 
 Issue/Bug/Comment/Suggestion/Other:

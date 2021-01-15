@@ -10,9 +10,9 @@ then
 fi
 
 
-# Maximum supported output base:
-#base_max;
-#base_out;
+# Maximum supported output exponent/number of bits to be taken:
+#bits_max;
+#bits_out;
 #charset;
 #char;	# Temporary container variable.
 #i;
@@ -34,14 +34,14 @@ then
 else
 	charset="${3}";
 fi;
-#base_max=$(printf '%s' "${charset}" | wc --chars);
-base_max=6;
-base_min=2;
+#bits_max=$(printf '%s' "${charset}" | wc --chars);
+bits_max=6;
+bits_min=1;
 
-base_out="${1}";
-if test "${base_out}" -lt ${base_min} || test "${base_out}" -gt ${base_max};
+bits_out="${1}";
+if test "${bits_out}" -lt ${bits_min} || test "${bits_out}" -gt ${bits_max};
 then
-	1>&2 printf '%s\n' "${0}: Usage: bits should be between ${base_min}-${base_max} incl";
+	1>&2 printf '%s\n' "${0}: Usage: bits should be between ${bits_min}-${bits_max} incl";
 	exit 1;
 fi;
 
@@ -116,23 +116,23 @@ done;
 
 
 str_bin_size=$(printf '%s' "${str_bin}" | wc --chars);
-str_bin_remain=$((${str_bin_size}%${base_out}));
+str_bin_remain=$((${str_bin_size}%${bits_out}));
 if test ${str_bin_remain} -gt 0;
 then
-	str_bin_extra=$((${base_out}-${str_bin_remain}));
+	str_bin_extra=$((${bits_out}-${str_bin_remain}));
 	((str_bin_size+=${str_bin_extra}));
 fi;
-str_bin="${str_bin}"$(perl -E "print '0' x ${str_bin_remain}";);
+str_bin="${str_bin}"$(perl -E "print '0' x ${str_bin_extra}";);
 str_out='';
 i=0;
 while test "${i}" -lt ${str_bin_size};
 do
-	substr_bin_curr="${str_bin:${i}:${base_out}}";
+	substr_bin_curr="${str_bin:${i}:${bits_out}}";
 	
 	#echo "$((2#${substr_bin_curr}))";
 	str_out="${str_out}${charset:$((2#${substr_bin_curr})):1}";
 	
-	((i+="${base_out}"));
+	((i+="${bits_out}"));
 done;
 
 printf '%s\n' "${str_out}";
