@@ -1,0 +1,1 @@
+doc/lice/cc0-1-decl-eng.txt

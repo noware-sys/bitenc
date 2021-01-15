@@ -1,0 +1,138 @@
+#!/run/current-system/sw/bin/bash
+
+set -e;
+set -x;
+
+if test ${#} -lt 2;
+then
+	1>&2 printf '%s\n' "${0}: Usage: ${0} bits str [charset]";
+	exit 1;
+fi
+
+
+# Maximum supported output base:
+#base_max;
+#base_out;
+#charset;
+#char;	# Temporary container variable.
+#i;
+#str_bin;
+#str_bin_size;
+#str_in;
+#str_in_size;
+#str_out;
+
+# Special chars:
+# [ !"#$%&'()*+,-./:;<=>?`[~]^_{|}]	# Count: 31
+# [ \t\v\n.,;:!?@#$&()[]{}|~-+/%*^<>='"`_\\]	# Count: 36
+# [.,;:!?@#$&()[]{}|~-_+%*^<>= `'"/]	# Count: 32
+# [.,;:!?@#$&()[]{}|~-_+%*^<>= `'"/\t\v\n\\]	# Count: 36
+if test ${#} -lt 3;
+then
+	#charset='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,;:!?@#$&()[]{}|~-_+/%*^<>= `'"'"'"/'; # Count: 26*2+10+32=94
+	charset='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'; # Count: 26*2+10+2=64
+else
+	charset="${3}";
+fi;
+#base_max=$(printf '%s' "${charset}" | wc --chars);
+base_max=6;
+base_min=2;
+
+base_out="${1}";
+if test "${base_out}" -lt ${base_min} || test "${base_out}" -gt ${base_max};
+then
+	1>&2 printf '%s\n' "${0}: Usage: bits should be between 2-6 incl";
+	exit 1;
+fi;
+
+str_in="${2}";
+str_in_size=$(printf '%s' "${str_in}" | wc --bytes);
+
+# Convert input string into binary:
+i=0;
+while test "${i}" -lt ${str_in_size};
+do
+	#echo "${str_in:${i}:1}";
+	char_in="${str_in:${i}:1}";
+	case "${char_in}" in
+		'0')
+			char='0000';
+			;;
+		'1')
+			char='0001';
+			;;
+		'2')
+			char='0010';
+			;;
+		'3')
+			char='0011';
+			;;
+		'4')
+			char='0100';
+			;;
+		'5')
+			char='0101';
+			;;
+		'6')
+			char='0110';
+			;;
+		'7')
+			char='0111';
+			;;
+		'8')
+			char='1000';
+			;;
+		'9')
+			char='1001';
+			;;
+		[aA])
+			char='1010';
+			;;
+		[bB])
+			char='1011';
+			;;
+		[cC])
+			char='1100';
+			;;
+		[dD])
+			char='1101';
+			;;
+		[eE])
+			char='1110';
+			;;
+		[fF])
+			char='1111';
+			;;
+		*)
+			1>&2 printf '%s\n' "${0}: Unknown character #${i} in input string: [${char_in}]";
+			exit 1;
+			;;
+	esac;
+	
+	str_bin="${str_bin}${char}";
+	
+	((++i));
+done;
+
+
+str_bin_size=$(printf '%s' "${str_bin}" | wc --chars);
+str_bin_remain=$((${str_bin_size}%${base_out}));
+if test ${str_bin_remain} -gt 0;
+then
+	str_bin_extra=$((${base_out}-${str_bin_remain}));
+	((str_bin_size+=${str_bin_extra}));
+fi;
+str_bin="${str_bin}"$(perl -E "print '0' x ${str_bin_remain}";);
+str_out='';
+i=0;
+while test "${i}" -lt ${str_bin_size};
+do
+	substr_bin_curr="${str_bin:${i}:${base_out}}";
+	
+	#echo "$((2#${substr_bin_curr}))";
+	str_out="${str_out}${charset:$((2#${substr_bin_curr})):1}";
+	
+	((i+="${base_out}"));
+done;
+
+printf '%s\n' "${str_out}";

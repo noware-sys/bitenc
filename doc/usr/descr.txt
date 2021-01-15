@@ -1,0 +1,68 @@
+Converter from a 4-bit hex string representation to a 5-bit base32 or a 6-bit base64 string representation. It can also convert to lower bases, such as 2-binary or 3-ternary.
+
+
+Rationale:
+----------
+I had found myself wanting to have a shorter string representation of the sha256 or sha512 sums; basenc (base32 or base64[url]) were not really what I wanted, since they produce a longer string.
+
+
+Command Argument Usage:
+-----------------------
+$ bitenc bits str [charset];
+
+bits:
+	number of grouping bits:
+		2 for a binary representation;
+		3 for a ternary representation;
+		4 for no net change from hexadecimal;
+		5 for a base32 representation;
+		6 for a base64 representation;
+		any other input would be invalid.
+str:
+	the input string:
+		Should contain only the characters [a-zA-Z0-9].
+charset [optinal]
+	Default: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
+	The character set, which characters are taken from, for forming the output string.
+	This could provide useful if one desires to change the default character set, for example:
+		Changing '-' to '+' and '_' to '.':
+		$ bitenc 6 <abc123...> '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+.';
+		
+		Changing the order (this would toggle the letter case of the result):
+		$ bitenc 6 <abc123...> '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
+		
+		Changing the order (this would toggle the letter case of the input string):
+		$ bitenc 4 <abc123...> '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
+		
+		Testing for proper functionality of the program (this should give back the same input):
+		$ bitenc 4 <abc123...> ['0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'];
+	
+	Only the needed number of characters are taken from this character set, depending on the requested bits/base:
+		For bits==4/base==16:
+			Number of used characters from the beginning: 16.
+			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', only these first ones would be use: '0123456789abcdef', regardless of any other subsequent ones which may be present.
+		For bits==5/base==32:
+			Number of used characters from the beginning: 32.
+			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', only these first ones would be use: '0123456789abcdefghijklmnopqrstuv', regardless of any other subsequent ones which may be present.
+		For bits==6/base==64:
+			Number of used characters from the beginning: 64.
+			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', only these first ones would be use (all of them): '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', regardless of any other subsequent ones which may be present.
+
+
+Note:
+-----
+The characters '-' and '_' were arbitrarily chosen, as they seemed the most neutral ones to use in miscellaneous contexts (file systems, urls), compared to other ones, such as [ .,;:~+!@#$%^&|], and especially [`/\].
+
+No additional error checking is performed: for example, if the bits argument is not an integer, then undetermined program behaviour could occur.
+
+The error message for an invalid/unknown character in the input string starts counting them from substring position 0 (aka the first character would be #0).
+
+
+Known Issue:
+------------
+In the code, "base" would rather mean "bits".
+
+
+Issue/Bug/Comment/Suggestion/Other:
+----------------------------------------
+Please report a bug/problem, or comment on a suggestion, etc, or simply start a conversation by opening an issue here.
