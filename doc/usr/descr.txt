@@ -1,4 +1,4 @@
-Converter from a 4-bit hex string representation to a 5-bit base32 or a 6-bit base64 string representation. It can also convert to lower bases, such as 2-binary or 3-ternary.
+Converter from a 4-bit hex string representation to a 5-bit base32 or a 6-bit base64 string representation. It can also convert to lower bases, such as 2-binary.
 
 
 Rationale:
@@ -60,10 +60,10 @@ The error message for an invalid/unknown character in the input string starts co
 
 
 Issue/Bug:
-----------------------------------------
+----------
 Please report a bug/problem by opening an issue here.
 
 
 Comment/Suggestion/Other:
-----------------------------------------
+-------------------------
 To make a comment or a suggestion, or simply to start a conversation, see the discussions here.

@@ -121,8 +121,8 @@ if test ${str_bin_remain} -gt 0;
 then
 	str_bin_extra=$((${bits_out}-${str_bin_remain}));
 	((str_bin_size+=${str_bin_extra}));
+	str_bin="${str_bin}"$(perl -E "print '0' x ${str_bin_extra}";);
 fi;
-str_bin="${str_bin}"$(perl -E "print '0' x ${str_bin_extra}";);
 str_out='';
 i=0;
 while test "${i}" -lt ${str_bin_size};
