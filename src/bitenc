@@ -1,14 +1,19 @@
-#!/bin/bash
+#!/bin/bash -e
 
-set -e;
+#set -e;
 #set -x;
 
-if test ${#} -lt 2;
-then
-	1>&2 printf '%s\n' "${0}: Usage: ${0} bits str [charset]";
-	exit 1;
-fi
+#bits_max=$(printf '%s' "${charset}" | wc --chars);
+bits_min=1;
+bits_max=6;
+#charset='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,;:!?@#$&()[]{}|~-_+/%*^<>= `'"'"'"/'; # Count: 26*2+10+32=94
+charset='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'; # Count: 26*2+10+2=64
+opt_parse=1;
+bits_out=5;
+_bits_out=;
 
+#if test ${#} -lt 2;
+#exit 123;
 
 # Maximum supported output exponent/number of bits to be taken:
 #bits_max;
@@ -27,112 +32,168 @@ fi
 # [ \t\v\n.,;:!?@#$&()[]{}|~-+/%*^<>='"`_\\]	# Count: 36
 # [.,;:!?@#$&()[]{}|~-_+%*^<>= `'"/]	# Count: 32
 # [.,;:!?@#$&()[]{}|~-_+%*^<>= `'"/\t\v\n\\]	# Count: 36
-if test ${#} -lt 3;
-then
-	#charset='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,;:!?@#$&()[]{}|~-_+/%*^<>= `'"'"'"/'; # Count: 26*2+10+32=94
-	charset='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'; # Count: 26*2+10+2=64
-else
-	charset="${3}";
-fi;
-#bits_max=$(printf '%s' "${charset}" | wc --chars);
-bits_max=6;
-bits_min=1;
+# option: --charset=
+#if test ${#} -lt 3;
 
-bits_out="${1}";
-if test "${bits_out}" -lt ${bits_min} || test "${bits_out}" -gt ${bits_max};
-then
-	1>&2 printf '%s\n' "${0}: Usage: bits should be between ${bits_min}-${bits_max} incl";
-	exit 1;
-fi;
+#if test ${#} -lt 2;
+#then
+#	exit 0;
+#fi;
 
-str_in="${2}";
-str_in_size=$(printf '%s' "${str_in}" | wc --bytes);
-
-# Convert input string into binary:
-i=0;
-while test "${i}" -lt ${str_in_size};
+for str_in in "${@}";
 do
-	#echo "${str_in:${i}:1}";
-	char_in="${str_in:${i}:1}";
-	case "${char_in}" in
-		'0')
-			char='0000';
-			;;
-		'1')
-			char='0001';
-			;;
-		'2')
-			char='0010';
-			;;
-		'3')
-			char='0011';
-			;;
-		'4')
-			char='0100';
-			;;
-		'5')
-			char='0101';
-			;;
-		'6')
-			char='0110';
-			;;
-		'7')
-			char='0111';
-			;;
-		'8')
-			char='1000';
-			;;
-		'9')
-			char='1001';
-			;;
-		[aA])
-			char='1010';
-			;;
-		[bB])
-			char='1011';
-			;;
-		[cC])
-			char='1100';
-			;;
-		[dD])
-			char='1101';
-			;;
-		[eE])
-			char='1110';
-			;;
-		[fF])
-			char='1111';
-			;;
-		*)
-			1>&2 printf '%s\n' "${0}: Unknown character #${i} in input string: [${char_in}]";
-			exit 1;
-			;;
-	esac;
-	
-	str_bin="${str_bin}${char}";
-	
-	((++i));
+  # Option parsing
+  if ((${opt_parse}));
+  then
+    if test "${str_in}" == '--';
+    then
+      opt_parse=0;
+      continue;
+
+		# option --bits
+		elif [[ "${str_in}" =~ ^-{0,2}b(it(s)?)?=.*$ ]];
+		then
+			_bits_out="$(printf -- '%s' "${str_in}" | cut -d'=' -f2 -;)";
+		#	shift 1;
+		#else
+		#fi;
+		#if test "${bits_out}" -lt ${bits_min} || test "${bits_out}" -gt ${bits_max};
+			if [[ "${_bits_out}" =~ ^\+?[${bits_min}-${bits_max}]+$ ]];
+			then
+				bits_out=${_bits_out};
+			else
+				1>&2 printf '%s\n' "${0}: Usage: bits should be an unsigned int, inclusively between ${bits_min}-${bits_max}: continuing using current unchanged value of ${bits_out}";
+				#exit 1;
+			fi;
+      continue;
+
+		# option --charset
+		elif [[ "${str_in}" =~ ^-{0,2}c(har(set)?)?=.*$ ]];
+		then
+			charset="$(printf -- '%s' "${1}" | cut -d'=' -f2 -;)";
+			#shift 1;
+      continue;
+
+		# option --help
+		elif [[ "${str_in}" =~ ^-{0,2}(\?|h(elp)?)$ ]];
+		then
+			1>&2 printf '%s\n' "$ ${0} [--bits=${bits_out}] [--charset=${charset}] [--] [str [...]];";
+			#exit 0;
+      continue;
+
+		# option --HELP
+		elif [[ "${str_in}" =~ ^-{0,2}H(ELP)?$ ]];
+		then
+			1>&2 printf '%s\n' "$ ${0} [[-[-]](h[elp]|?)] [[-[-]]H[ELP]] [[-[-]]b[it[s]]=<${bits_min}-${bits_max}>[${bits_out}]] [[-[-]]c[har[set]]=[${charset}]] [instr<a-zA-Z0-9> [...]];";
+			#exit 0;
+      continue;
+		fi;
+	fi;
+
+
+	#
+	# Actual processing of the input strings.
+	#
+
+	#str_in="${2}";
+	str_in_size=$(printf '%s' "${str_in}" | wc --bytes);
+	str_bin='';
+	str_out='';
+
+	# Convert input string into binary:
+	i=0;
+	while test "${i}" -lt ${str_in_size};
+	do
+		#echo "${str_in:${i}:1}";
+		char_in="${str_in:${i}:1}";
+		case "${char_in}" in
+			'0')
+				char='0000';
+				;;
+			'1')
+				char='0001';
+				;;
+			'2')
+				char='0010';
+				;;
+			'3')
+				char='0011';
+				;;
+			'4')
+				char='0100';
+				;;
+			'5')
+				char='0101';
+				;;
+			'6')
+				char='0110';
+				;;
+			'7')
+				char='0111';
+				;;
+			'8')
+				char='1000';
+				;;
+			'9')
+				char='1001';
+				;;
+			[aA])
+				char='1010';
+				;;
+			[bB])
+				char='1011';
+				;;
+			[cC])
+				char='1100';
+				;;
+			[dD])
+				char='1101';
+				;;
+			[eE])
+				char='1110';
+				;;
+			[fF])
+				char='1111';
+				;;
+			*)
+				1>&2 printf '%s\n' "${0}: Unknown character #${i} in input string [${str_in}]: [${char_in}]";
+				#exit 1;
+				# str_out, (also) used as our (bool) flag
+				str_out='[invalid]';
+				break;
+				;;
+		esac;
+
+		str_bin="${str_bin}${char}";
+
+		((++i));
+	done;
+
+	if test "${str_out}" == '[invalid]';
+	then
+		1>&2 printf '%s %s\n\0' "${str_out}" "${str_in}";
+		continue;
+	fi;
+
+	str_bin_size=$(printf '%s' "${str_bin}" | wc --chars);
+	str_bin_remain=$((${str_bin_size}%${bits_out}));
+	if test ${str_bin_remain} -gt 0;
+	then
+		str_bin_extra=$((${bits_out}-${str_bin_remain}));
+		((str_bin_size+=${str_bin_extra}));
+		str_bin="${str_bin}"$(perl -E "print '0' x ${str_bin_extra}";);
+	fi;
+	str_out='';
+	i=0;
+	while test "${i}" -lt ${str_bin_size};
+	do
+		substr_bin_curr="${str_bin:${i}:${bits_out}}";
+
+		#echo "$((2#${substr_bin_curr}))";
+		str_out="${str_out}${charset:$((2#${substr_bin_curr})):1}";
+
+		((i+="${bits_out}"));
+	done;
+
+	printf '%s %s\n\0' "${str_out}" "${str_in}";
 done;
-
-
-str_bin_size=$(printf '%s' "${str_bin}" | wc --chars);
-str_bin_remain=$((${str_bin_size}%${bits_out}));
-if test ${str_bin_remain} -gt 0;
-then
-	str_bin_extra=$((${bits_out}-${str_bin_remain}));
-	((str_bin_size+=${str_bin_extra}));
-	str_bin="${str_bin}"$(perl -E "print '0' x ${str_bin_extra}";);
-fi;
-str_out='';
-i=0;
-while test "${i}" -lt ${str_bin_size};
-do
-	substr_bin_curr="${str_bin:${i}:${bits_out}}";
-	
-	#echo "$((2#${substr_bin_curr}))";
-	str_out="${str_out}${charset:$((2#${substr_bin_curr})):1}";
-	
-	((i+="${bits_out}"));
-done;
-
-printf '%s\n' "${str_out}";

@@ -8,51 +8,53 @@ I had found myself wanting to have a shorter string representation of the sha256
 
 Command Argument Usage:
 -----------------------
-$ bitenc bits str [charset];
+Basically (--help):
+$ bitenc [--charset=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-] [--bits=5] [--] [str [...]];
+Technically (--HELP):
+$ bitenc [[-[-]](h[elp]|?)] [[-[-]]H[ELP]] [[-[-]]b[it[s]]=<${bits_min}-${bits_max}>[${bits_out}]] [[-[-]]c[har[set]]=[${charset}]] [instr<a-zA-Z0-9> [...]];
 
-bits:
+--bits [optional] [default=5]:
 	number of grouping bits/exponent for the base (2):
 		1 for a 1-bit, 2^1=2-base binary representation;
 		2 for a 2-bit, 2^2=4-base representation;
 		3 for a 3-bit, 2^3=8-base representation;
 		4 for no net change from 4-bit, 2^4=16-base hexadecimal representation;
-		5 for a 5-bit, 2^5=32-base base32 representation;
-		6 for a 6-bit, 2^6=64-base base64 representation;
+		5 for a 5-bit, 2^5=32-base base32 representation (same-case out-charset);
+		6 for a 6-bit, 2^6=64-base base64 representation (mixed out-charset case + [_-]);
 		any other input would be invalid.
 str:
 	the input string:
-		Should contain only the characters [a-zA-Z0-9].
-charset [optional]
-	Default: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'
+		It should contain only the characters [a-zA-Z0-9].
+--charset [optional] [default='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-']
 	The character set, which characters are taken from, for forming the output string.
 	This could provide useful if one desires to change the default character set, for example:
 		Changing '-' to '+' and '_' to '.':
-		$ bitenc 6 <abc123...> '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+.';
+		$ bitenc -b=6 -c='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.+' abc123...;
 		
 		Changing the order (this would toggle the letter case of the result):
-		$ bitenc 6 <abc123...> '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
+		$ bitenc -b=6 -c='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-' abc123...;
 		
 		Changing the order (this would toggle the letter case of the input string):
-		$ bitenc 4 <abc123...> '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
+		$ bitenc -b=4 -c='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_-' abc123...;
 		
 		Testing for proper functionality of the program (this should give back the same input):
-		$ bitenc 4 <abc123...> ['0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_'];
+		$ bitenc -b=4 [-c='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-'] abc123...;
 	
 	Only the needed number of characters are taken from this character set, depending on the requested bits/base:
 		For bits==4/base==16:
 			Number of used characters from the beginning: 16.
-			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', only these first ones would be use: '0123456789abcdef', regardless of any other subsequent ones which may be present.
+			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-', only these first ones would be used: '0123456789abcdef', regardless of any other subsequent ones which may be present.
 		For bits==5/base==32:
 			Number of used characters from the beginning: 32.
-			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', only these first ones would be use: '0123456789abcdefghijklmnopqrstuv', regardless of any other subsequent ones which may be present.
+			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-', only these first ones would be used: '0123456789abcdefghijklmnopqrstuv', regardless of any other subsequent ones which may be present.
 		For bits==6/base==64:
 			Number of used characters from the beginning: 64.
-			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', only these first ones would be use (all of them): '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_', regardless of any other subsequent ones which may be present.
+			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-', only these first ones would be used (all of them): '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-', regardless of any other subsequent ones which may be present.
 
 
 Note:
 -----
-The characters '-' and '_' were arbitrarily chosen, as they seemed the most neutral ones to use in miscellaneous contexts (file systems, urls), compared to other ones, such as [ .,;:~+!@#$%^&|], and especially [`/\].
+The characters '_' and '-' were arbitrarily chosen, as they seemed the most neutral ones to use in miscellaneous contexts (file systems, urls), compared to other ones, such as [ .,;:~+=!@#$%^&|], and especially [`/\].
 
 No additional error checking is performed: for example, if the bits argument is not an integer, then undetermined program behaviour could occur.
 
