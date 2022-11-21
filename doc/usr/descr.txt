@@ -53,6 +53,10 @@ str [optional] [default=<none>]:
 			Number of used characters from the beginning: 64.
 			For the default value of the charset, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-', only these first ones would be used (all of them): '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-', regardless of any other subsequent ones which may be present.
 
+Dependency:
+-----------
+- BASH (interpreter of this script);
+- Perl (in path of this script; called on line 184).
 
 Note:
 -----
