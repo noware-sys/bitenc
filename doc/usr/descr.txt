@@ -8,8 +8,9 @@ I had found myself wanting to have a shorter string representation of the sha256
 
 Command Argument Usage:
 -----------------------
-Basically (--help):
-$ bitenc [--help] [--HELP] [--bits=5] [--charset=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-] [--] [str [...]];
+Basically (--help/--?):
+$ bitenc [--help] [--?] [--HELP] [--bits=5] 
+[--charset=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-] [--] [str [...]];
 Technically (--HELP):
 $ bitenc [[-[-]](h[elp]|?)] [[-[-]]H[ELP]] [[-[-]]b[it[s]]=<1-6>[5]] [[-[-]]c[har[set]]=[0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-]] [--] [str<a-zA-Z0-9> [...]];
 

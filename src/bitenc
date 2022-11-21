@@ -77,14 +77,14 @@ do
 		# option --help
 		elif [[ "${str_in}" =~ ^-{0,2}(\?|h(elp)?)$ ]];
 		then
-			1>&2 printf '%s\n' "$ ${0} [--bits=${bits_out}] [--charset=${charset}] [--] [str [...]];";
+			1>&2 printf '%s\n' "${0} [--help] [--?] [--HELP] [--bits=${bits_out}] [--charset=${charset}] [--] [str [...]];";
 			#exit 0;
       continue;
 
 		# option --HELP
 		elif [[ "${str_in}" =~ ^-{0,2}H(ELP)?$ ]];
 		then
-			1>&2 printf '%s\n' "$ ${0} [[-[-]](h[elp]|?)] [[-[-]]H[ELP]] [[-[-]]b[it[s]]=<${bits_min}-${bits_max}>[${bits_out}]] [[-[-]]c[har[set]]=[${charset}]] [instr<a-zA-Z0-9> [...]];";
+			1>&2 printf '%s\n' "${0} [[-[-]](h[elp]|?)] [[-[-]]H[ELP]] [[-[-]]b[it[s]]=<${bits_min}-${bits_max}>[${bits_out}]] [[-[-]]c[har[set]]=[${charset}]] [instr<a-zA-Z0-9> [...]];";
 			#exit 0;
       continue;
 		fi;
