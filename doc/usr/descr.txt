@@ -23,9 +23,10 @@ $ bitenc [[-[-]](h[elp]|?)] [[-[-]]H[ELP]] [[-[-]]b[it[s]]=<1-6>[5]] [[-[-]]c[ha
 		5 for a 5-bit, 2^5=32-base base32 representation (same-case out-charset);
 		6 for a 6-bit, 2^6=64-base base64 representation (mixed out-charset case + [_-]);
 		any other input would be invalid.
-str:
+str [optional] [default=<none>]:
 	the input string:
 		It should contain only the characters [a-zA-Z0-9].
+		Without any input string, success/0 is still returned.
 --charset [optional] [default='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-']
 	The character set, which characters are taken from, for forming the output string.
 	This could provide useful if one desires to change the default character set, for example:
